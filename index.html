@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Aria — AI Chat</title>
+<title>gayi — AI Chat</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
@@ -253,31 +253,7 @@
     animation: fadeUp 0.5s 0.15s ease both;
   }
 
-  /* Config bar (worker URL) */
-  #config-bar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 10px;
-    padding: 8px 12px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 0.75rem;
-    color: var(--muted);
-  }
-  #config-bar label { white-space: nowrap; }
-  #worker-url {
-    flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--accent);
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    min-width: 0;
-  }
-  #worker-url::placeholder { color: var(--muted); }
+  #config-bar { display: none; }
 
   .input-row {
     display: flex;
@@ -346,9 +322,9 @@
 <div id="app">
 
   <header>
-    <div class="logo-mark">A</div>
+    <div class="logo-mark">g</div>
     <div class="header-info">
-      <h1>Aria</h1>
+      <h1>gayi</h1>
       <p>Powered by Groq · LLaMA 3.3</p>
     </div>
     <div class="status-dot" title="Online"></div>
@@ -356,8 +332,8 @@
 
   <div id="messages">
     <div class="welcome" id="welcome">
-      <div class="big-letter">Aria</div>
-      <p>Ask me anything. I'm sharp, direct, and occasionally charming.</p>
+      <div class="big-letter">gayi</div>
+      <p>The greatest coder of all time. Ask me anything.</p>
     </div>
   </div>
 
@@ -367,7 +343,7 @@
       <input type="url" id="worker-url" placeholder="https://your-worker.your-subdomain.workers.dev" spellcheck="false" />
     </div>
     <div class="input-row">
-      <textarea id="user-input" rows="1" placeholder="Message Aria…" autofocus></textarea>
+      <textarea id="user-input" rows="1" placeholder="Message gayi…" autofocus></textarea>
       <button id="send-btn" title="Send">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -382,7 +358,7 @@
 
 <script>
 // ── STATE ──────────────────────────────────────────────
-const history = [];  // [{role, content}, ...]
+const history = [];
 
 // ── ELEMENTS ───────────────────────────────────────────
 const messagesEl  = document.getElementById('messages');
@@ -391,12 +367,8 @@ const sendBtn     = document.getElementById('send-btn');
 const workerUrlEl = document.getElementById('worker-url');
 const welcomeEl   = document.getElementById('welcome');
 
-// ── PERSIST WORKER URL ─────────────────────────────────
-const savedUrl = localStorage.getItem('aria_worker_url') || 'https://uncensoredai.theodor-rozitis.workers.dev';
-workerUrlEl.value = savedUrl;
-workerUrlEl.addEventListener('input', () => {
-  localStorage.setItem('aria_worker_url', workerUrlEl.value.trim());
-});
+// ── HARDCODED WORKER URL ───────────────────────────────
+workerUrlEl.value = 'https://uncensoredai.theodor-rozitis.workers.dev';
 
 // ── AUTO-RESIZE TEXTAREA ───────────────────────────────
 inputEl.addEventListener('input', () => {
@@ -416,27 +388,18 @@ sendBtn.addEventListener('click', sendMessage);
 // ── MARKDOWN-LITE RENDERER ─────────────────────────────
 function renderMarkdown(text) {
   let html = text
-    // Escape HTML first
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    // Code blocks  ```lang\n...\n```
     .replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) =>
       `<pre><code class="lang-${lang}">${code.trim()}</code></pre>`)
-    // Inline code
     .replace(/`([^`]+)`/g, '<code>$1</code>')
-    // Bold
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    // Italic
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    // Headings
     .replace(/^### (.+)$/gm, '<strong>$1</strong>')
     .replace(/^## (.+)$/gm, '<strong>$1</strong>')
     .replace(/^# (.+)$/gm, '<strong>$1</strong>')
-    // Unordered lists
     .replace(/^[-*] (.+)$/gm, '<li>$1</li>')
     .replace(/(<li>.*<\/li>\n?)+/g, m => `<ul>${m}</ul>`)
-    // Ordered lists
     .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
-    // Line breaks → paragraphs
     .replace(/\n{2,}/g, '</p><p>')
     .replace(/\n/g, '<br/>');
 
@@ -452,7 +415,7 @@ function appendMessage(role, content) {
 
   const avatar = document.createElement('div');
   avatar.className = 'avatar';
-  avatar.textContent = role === 'ai' ? 'A' : 'U';
+  avatar.textContent = role === 'ai' ? 'g' : 'U';
 
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
@@ -460,7 +423,6 @@ function appendMessage(role, content) {
   if (role === 'ai') {
     bubble.innerHTML = renderMarkdown(content);
   } else {
-    // User message: plain text, preserve line breaks
     bubble.textContent = content;
   }
 
@@ -479,7 +441,7 @@ function showTyping() {
 
   const avatar = document.createElement('div');
   avatar.className = 'avatar';
-  avatar.textContent = 'A';
+  avatar.textContent = 'g';
 
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
@@ -514,11 +476,9 @@ async function sendMessage() {
     return;
   }
 
-  // Add user turn to history & UI
   history.push({ role: 'user', content: text });
   appendMessage('user', text);
 
-  // Reset input
   inputEl.value = '';
   inputEl.style.height = 'auto';
   sendBtn.disabled = true;
